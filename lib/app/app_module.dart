@@ -1,3 +1,5 @@
+import 'package:shopping_list/app/shared/repositories/auth_repository.dart';
+import 'package:shopping_list/app/shared/repositories/hasura_repository.dart';
 import 'package:shopping_list/app/app_bloc.dart';
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,8 @@ class AppModule extends ModuleWidget {
 
   @override
   List<Dependency> get dependencies => [
+        Dependency((i) => AuthRepository()),
+        Dependency((i) => HasuraRepository()),
         Dependency((i) => LocalstorageService()),
       ];
 

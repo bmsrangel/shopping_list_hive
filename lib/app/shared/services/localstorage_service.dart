@@ -14,7 +14,7 @@ class LocalstorageService extends Disposable {
   _initDb() async {
     final directory = await path_provider.getApplicationDocumentsDirectory();
     Hive.init(directory.path);
-    final box = Hive.openBox("shopping_list");
+    final box = Hive.openBox("userToken");
     if (!completer.isCompleted) completer.complete(box);
   }
 
@@ -27,6 +27,18 @@ class LocalstorageService extends Disposable {
     final box = await completer.future;
     box.put(box.values.length, item.toString());
     return item;
+  }
+
+  Future<String> getUserToken() async {
+    final box = await completer.future;
+    String userToken = box.get("token");
+    return userToken;
+  }
+
+  Future<String> storeUserToken(String userToken) async {
+    final box = await completer.future;
+    box.put("token", userToken);
+    return userToken;
   }
 
   //dispose will be called automatically
