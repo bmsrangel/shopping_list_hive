@@ -28,6 +28,10 @@ class HomeBloc extends BlocBase {
     allList.sink.add(shoppingList);
   }
 
+  clearAll() async {
+    await localStorage.clearAll();
+  }
+
   //dispose will be called automatically by closing its streams
   @override
   void dispose() {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:hive/hive.dart';
@@ -14,7 +15,7 @@ class LocalstorageService extends Disposable {
   _initDb() async {
     final directory = await path_provider.getApplicationDocumentsDirectory();
     Hive.init(directory.path);
-    final box = Hive.openBox("userToken");
+    final box = Hive.openBox("shoppingLists");
     if (!completer.isCompleted) completer.complete(box);
   }
 
@@ -25,20 +26,16 @@ class LocalstorageService extends Disposable {
 
   Future<ShoppingList> addShoppingList(ShoppingList item) async {
     final box = await completer.future;
-    box.put(box.values.length, item.toString());
+    item.id = box.values.length;
+    box.put(box.values.length, item.toJson());
     return item;
   }
 
-  Future<String> getUserToken() async {
-    final box = await completer.future;
-    String userToken = box.get("token");
-    return userToken;
-  }
+  Future<ShoppingList> updateShoppingList(ShoppingList list) {}
 
-  Future<String> storeUserToken(String userToken) async {
+  clearAll() async {
     final box = await completer.future;
-    box.put("token", userToken);
-    return userToken;
+    await box.clear();
   }
 
   //dispose will be called automatically

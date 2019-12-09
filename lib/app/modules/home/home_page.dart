@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_list/app/modules/home/components/add_box/add_box_widget.dart';
 import 'package:shopping_list/app/modules/home/home_module.dart';
+import 'package:shopping_list/app/modules/single_list/single_list_module.dart';
 import 'package:shopping_list/app/shared/models/shopping_list.dart';
 
 import 'home_bloc.dart';
@@ -22,6 +23,14 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text(widget.title),
         centerTitle: true,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () {
+              controller.clearAll();
+            },
+          )
+        ],
       ),
       body: StreamBuilder(
         stream: controller.output,
@@ -46,6 +55,8 @@ class _HomePageState extends State<HomePage> {
                 onTap: () {
                   controller.selectedList = item;
                   print(controller.selectedList.name);
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (BuildContext context) => SingleListModule()));
                 },
               );
             },
