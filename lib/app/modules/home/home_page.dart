@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shopping_list/app/modules/home/components/add_box/add_box_widget.dart';
+import 'package:shopping_list/app/modules/home/components/list_tile/list_tile_widget.dart';
 import 'package:shopping_list/app/modules/home/home_module.dart';
 import 'package:shopping_list/app/modules/single_list/single_list_module.dart';
 import 'package:shopping_list/app/shared/models/shopping_list.dart';
@@ -34,7 +35,8 @@ class _HomePageState extends State<HomePage> {
       ),
       body: StreamBuilder(
         stream: controller.output,
-        builder: (BuildContext context, AsyncSnapshot<List<ShoppingList>> snapshot) {
+        builder:
+            (BuildContext context, AsyncSnapshot<List<ShoppingList>> snapshot) {
           if (!snapshot.hasData) {
             return Center(child: CircularProgressIndicator());
           }
@@ -43,21 +45,48 @@ class _HomePageState extends State<HomePage> {
             separatorBuilder: (BuildContext context, int index) => Divider(),
             itemBuilder: (BuildContext context, int index) {
               ShoppingList item = snapshot.data[index];
-              return ListTile(
-                title: Text(item.name),
-                subtitle: Text(item.creationDate.toString()),
-                trailing: IconButton(
-                  icon: Icon(Icons.more_vert),
-                  onPressed: () {
-                    print("menu pressionado");
-                  },
+              return Dismissible(
+                key: Key(snapshot.data[index].name),
+                background: Container(
+                  padding: EdgeInsets.only(right: 20),
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  child: Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  ),
                 ),
-                onTap: () {
-                  controller.selectedList = item;
-                  print(controller.selectedList.name);
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (BuildContext context) => SingleListModule()));
+                direction: DismissDirection.endToStart,
+                confirmDismiss: (direction) {
+                  Future<bool> result = Future.value(false);
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text("Deseja remover o item da lista?"),
+                          content: Text("Esta ação é irreversível!"),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: Text("Cancelar"),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            FlatButton(
+                              child: Text("Confirmar"),
+                              onPressed: () {
+                                controller
+                                    .deleteShoppingList(snapshot.data[index]);
+                                Navigator.pop(context);
+                                result = Future.value(true);
+                              },
+                            ),
+                          ],
+                        );
+                      });
+                  return result;
                 },
+                child: ListTileWidget(item: item, controller: controller,)
               );
             },
           );

@@ -2,7 +2,7 @@ class ListItem {
   String description;
   bool checked;
 
-  ListItem({this.description, this.checked});
+  ListItem({this.description, this.checked = false});
 
   factory ListItem.fromJson(Map json) {
     return ListItem(
