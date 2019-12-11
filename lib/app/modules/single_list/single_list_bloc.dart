@@ -7,8 +7,7 @@ import '../../shared/models/shopping_list.dart';
 import '../../shared/services/localstorage_service.dart';
 
 class SingleListBloc extends BlocBase {
-  BehaviorSubject<List<ListItem>> shoppingItems =
-      BehaviorSubject<List<ListItem>>();
+  BehaviorSubject<List<ListItem>> shoppingItems = BehaviorSubject<List<ListItem>>();
   Sink<List<ListItem>> get inItems => shoppingItems.sink;
   Stream<List<ListItem>> get outItems => shoppingItems.stream;
 
@@ -27,6 +26,12 @@ class SingleListBloc extends BlocBase {
 
   changeCheckStatus(ListItem listItem, bool check) async {
     selectedList.items[selectedList.items.indexOf(listItem)].checked = check;
+    await localStorage.updateShoppingList(selectedList);
+    shoppingItems.sink.add(selectedList.items);
+  }
+
+  deleteListItem(int index) async {
+    selectedList.items.removeAt(index);
     await localStorage.updateShoppingList(selectedList);
     shoppingItems.sink.add(selectedList.items);
   }

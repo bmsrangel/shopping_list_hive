@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
-import '../../../../shared/models/list_item.dart';
-import '../../single_list_bloc.dart';
-import '../../single_list_module.dart';
+import 'package:shopping_list/app/modules/single_list/single_list_bloc.dart';
+import 'package:shopping_list/app/modules/single_list/single_list_module.dart';
+import 'package:shopping_list/app/shared/models/list_item.dart';
 
 class AddItemWidget extends StatelessWidget {
   final bloc = SingleListModule.to.bloc<SingleListBloc>();
@@ -11,7 +10,7 @@ class AddItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     TextEditingController newListItem = TextEditingController();
     return AlertDialog(
-      title: Text("Adicionar nova lista"),
+      title: Text("Adicionar item"),
       content: TextField(
         controller: newListItem,
         maxLines: 1,
@@ -27,7 +26,7 @@ class AddItemWidget extends StatelessWidget {
           },
         ),
         FlatButton(
-          child: Text("Criar"),
+          child: Text("Adicionar"),
           onPressed: () {
             ListItem newItem = ListItem(description: newListItem.text);
             bloc.addShoppingItem(newItem);

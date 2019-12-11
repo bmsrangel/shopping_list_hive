@@ -22,7 +22,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(
+          widget.title,
+          style: TextStyle(fontSize: MediaQuery.of(context).size.height * .03),
+        ),
         centerTitle: true,
         actions: <Widget>[
           IconButton(
@@ -35,8 +38,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: StreamBuilder(
         stream: controller.output,
-        builder:
-            (BuildContext context, AsyncSnapshot<List<ShoppingList>> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<List<ShoppingList>> snapshot) {
           if (!snapshot.hasData) {
             return Center(child: CircularProgressIndicator());
           }
@@ -46,48 +48,49 @@ class _HomePageState extends State<HomePage> {
             itemBuilder: (BuildContext context, int index) {
               ShoppingList item = snapshot.data[index];
               return Dismissible(
-                key: Key(snapshot.data[index].name),
-                background: Container(
-                  padding: EdgeInsets.only(right: 20),
-                  color: Colors.red,
-                  alignment: Alignment.centerRight,
-                  child: Icon(
-                    Icons.delete,
-                    color: Colors.white,
+                  key: Key(item.name),
+                  background: Container(
+                    padding: EdgeInsets.only(right: 20),
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    child: Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                direction: DismissDirection.endToStart,
-                confirmDismiss: (direction) {
-                  Future<bool> result = Future.value(false);
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: Text("Deseja remover o item da lista?"),
-                          content: Text("Esta ação é irreversível!"),
-                          actions: <Widget>[
-                            FlatButton(
-                              child: Text("Cancelar"),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                            FlatButton(
-                              child: Text("Confirmar"),
-                              onPressed: () {
-                                controller
-                                    .deleteShoppingList(snapshot.data[index]);
-                                Navigator.pop(context);
-                                result = Future.value(true);
-                              },
-                            ),
-                          ],
-                        );
-                      });
-                  return result;
-                },
-                child: ListTileWidget(item: item, controller: controller,)
-              );
+                  direction: DismissDirection.endToStart,
+                  confirmDismiss: (direction) {
+                    Future<bool> result = Future.value(false);
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text("Deseja remover o item da lista?"),
+                            content: Text("Esta ação é irreversível!"),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text("Cancelar"),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              FlatButton(
+                                child: Text("Confirmar"),
+                                onPressed: () {
+                                  controller.deleteShoppingList(snapshot.data[index]);
+                                  Navigator.pop(context);
+                                  result = Future.value(true);
+                                },
+                              ),
+                            ],
+                          );
+                        });
+                    return result;
+                  },
+                  child: ListTileWidget(
+                    item: item,
+                    controller: controller,
+                  ));
             },
           );
         },

@@ -22,7 +22,11 @@ class _SingleListPageState extends State<SingleListPage> {
     // selectedList.items.add(ListItem(description: "Teste de item"));
     return Scaffold(
       appBar: AppBar(
-        title: Text(bloc.selectedList.name),
+        title: Text(
+          bloc.selectedList.name,
+          style: TextStyle(fontSize: MediaQuery.of(context).size.height * .03),
+        ),
+        centerTitle: true,
       ),
       body: StreamBuilder<List<ListItem>>(
           stream: bloc.outItems,
@@ -35,14 +39,62 @@ class _SingleListPageState extends State<SingleListPage> {
               itemCount: snapshot.data.length,
               separatorBuilder: (BuildContext context, int index) => Divider(),
               itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Text(snapshot.data[index].description),
-                  trailing: Checkbox(
-                    value: snapshot.data[index].checked,
-                    onChanged: (bool value) {
-                      bloc.changeCheckStatus(snapshot.data[index], value);
-                    },
+                ListItem listItem = snapshot.data[index];
+                return Dismissible(
+                  child: ListTile(
+                    title: Text(
+                      listItem.description,
+                      style: TextStyle(
+                          fontSize: 18,
+                          decoration: listItem.checked ? TextDecoration.lineThrough : null,
+                          color: listItem.checked ? Colors.grey : Colors.black),
+                    ),
+                    trailing: Checkbox(
+                      value: listItem.checked,
+                      onChanged: (bool value) {
+                        bloc.changeCheckStatus(listItem, value);
+                      },
+                    ),
                   ),
+                  key: Key(listItem.description),
+                  background: Container(
+                    padding: EdgeInsets.only(right: 20),
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    child: Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                  ),
+                  direction: DismissDirection.endToStart,
+                  confirmDismiss: (direction) {
+                    Future<bool> result = Future.value(false);
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text("Deseja remover o item da lista?"),
+                            content: Text("Esta ação é irreversível!"),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text("Cancelar"),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              FlatButton(
+                                child: Text("Confirmar"),
+                                onPressed: () {
+                                  bloc.deleteListItem(index);
+                                  Navigator.pop(context);
+                                  result = Future.value(true);
+                                },
+                              ),
+                            ],
+                          );
+                        });
+                    return result;
+                  },
                 );
               },
             );
